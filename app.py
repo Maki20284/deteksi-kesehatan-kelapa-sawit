@@ -6,7 +6,7 @@ from ultralytics import YOLO
 # Load trained model
 @st.cache_resource
 def load_model():
-    return YOLO("yolov12_sawit.pt")
+    return YOLO("yolov12_sawit.torchscript")
 
 model = load_model()
 
