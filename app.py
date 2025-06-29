@@ -9,7 +9,7 @@ import os
 # Load trained model
 @st.cache_resource
 def load_model():
-    return YOLO("yolov12_sawit.torchscript")
+    return YOLO("yolov12_sawit_v2.torchscript")
 
 model = load_model()
 
