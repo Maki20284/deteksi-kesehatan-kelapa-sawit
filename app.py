@@ -52,12 +52,43 @@ if uploaded_file is not None:
     if len(boxes) == 0:
         st.warning("Tidak terdeteksi objek pada gambar dengan threshold ini. Coba turunkan threshold confidence.")
     else:
-        # Ambil image hasil plot dengan threshold
-        result_img = results[0].plot()
-        result_img = cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB)
-        st.subheader("Hasil Deteksi")
-        st.image(result_img, use_column_width=True, caption="Deteksi dengan bounding box dan label")
+        # Baca gambar asli
+        original_img = cv2.imread(tmp_path)
+        original_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
+        img_filtered = original_img.copy()
 
+        # Warna untuk tiap kelas (opsional)
+        COLOR_MAP = {
+            'Dead': (255, 0, 0),
+            'Grass': (0, 255, 0),
+            'Healthy': (0, 200, 0),
+            'Small': (255, 255, 0),
+            'Yellow': (255, 165, 0)
+        }
+
+        # Font settings
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.6
+        thickness = 2
+
+        for box in boxes:
+            cls_id = int(box.cls[0])
+            cls_name = names[cls_id]
+            conf = float(box.conf[0])
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+
+            if conf >= conf_threshold and cls_name in selected_classes:
+                color = COLOR_MAP.get(cls_name, (255, 255, 255))
+                # Gambar kotak
+                cv2.rectangle(img_filtered, (x1, y1), (x2, y2), color, 2)
+                # Label teks
+                label_text = f"{cls_name} {conf:.2f}"
+                (text_width, text_height), baseline = cv2.getTextSize(label_text, font, font_scale, thickness)
+                cv2.rectangle(img_filtered, (x1, y1 - text_height - baseline), (x1 + text_width, y1), color, -1)
+                cv2.putText(img_filtered, label_text, (x1, y1 - baseline), font, font_scale, (0, 0, 0), thickness)
+
+        st.subheader("Hasil Deteksi (Filtered)")
+        st.image(img_filtered, use_column_width=True, caption="Bounding box hanya untuk kelas yang dipilih")
 
     # Buat dataframe hasil deteksi
         detections = []
