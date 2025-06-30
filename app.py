@@ -68,8 +68,8 @@ if uploaded_file is not None:
 
         # Font settings
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.6
-        thickness = 2
+        font_scale = 1.5
+        thickness = 4
 
         for box in boxes:
             cls_id = int(box.cls[0])
