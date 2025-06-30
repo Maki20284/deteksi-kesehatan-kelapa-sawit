@@ -18,7 +18,16 @@ st.write("""
 Upload gambar pohon sawit untuk mendeteksi kesehatannya.
 """)
 
+# Semua nama kelas yang tersedia (static list atau dari model)
+ALL_CLASSES = ['Dead', 'Grass', 'Healthy', 'Small', 'Yellow']
+
+# Sidebar filter kelas
 st.sidebar.header("⚙️ Pengaturan Deteksi")
+selected_classes = st.sidebar.multiselect(
+    'Filter kelas yang ingin ditampilkan:',
+    ALL_CLASSES,
+    default=ALL_CLASSES
+)
 conf_threshold = st.sidebar.slider('Confidence Threshold', 0.1, 1.0, 0.5, 0.05)
 iou_threshold = st.sidebar.slider('IoU Threshold', 0.1, 1.0, 0.4, 0.05)
 
@@ -57,7 +66,7 @@ if uploaded_file is not None:
             cls_name = names[cls_id]
             conf = float(box.conf[0])
             x1, y1, x2, y2 = map(int, box.xyxy[0])
-            if conf >= conf_threshold:
+            if conf >= conf_threshold and cls_name in selected_classes:
                 detections.append({
                     "Label": cls_name,
                     "Confidence": f"{conf:.2f}",
