@@ -72,7 +72,7 @@ if uploaded_file:
         names = results[0].names
 
         if len(boxes) == 0:
-            st.warning("Tidak terdeteksi objek pada gambar dengan threshold ini. Coba turunkan threshold confidence.")
+            st.warning("Tidak terdeteksi objek pada gambar dengan threshold ini. Coba turunkan threshold confidence atau coba perbesar gambarnya.")
         else:
             # Load gambar hasil crop
             img_cv = cv2.imread(tmp_crop_path)
