@@ -130,5 +130,16 @@ if uploaded_file:
             df = pd.DataFrame(detections)
             st.subheader("📋 Tabel Deteksi")
             st.dataframe(df, use_container_width=True)
+
+            # ✅ Hitung total deteksi
+            total_count = len(df)
+            st.success(f"🔢 Total objek terdeteksi: **{total_count}**")
+
+            # ✅ Hitung jumlah per label
+            label_counts = df['Label'].value_counts().reset_index()
+            label_counts.columns = ['Label', 'Count']
+
+            st.subheader("📊 Jumlah Deteksi per Label")
+            st.table(label_counts)
         else:
             st.info("Tidak ada deteksi yang melewati filter kelas atau threshold.")
