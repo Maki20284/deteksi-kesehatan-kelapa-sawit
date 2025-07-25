@@ -10,11 +10,23 @@ import pandas as pd
 # Load trained model
 @st.cache_resource
 def load_model():
-    return YOLO("yolov12_sawit_v2.torchscript")
+    return YOLO("yolov11_sawit_v2_150 epoch.torchscript")
 
 model = load_model()
 
-st.title("🚀 Deteksi Kesehatan Pohon Sawit dengan YOLOv12")
+st.title("🚀 Deteksi Kesehatan Pohon Sawit")
+
+# ✨ Tambahkan penjelasan tentang jenis gambar yang bisa diupload
+st.markdown("""
+### 📌 Petunjuk Gambar yang Valid:
+- Gambar harus merupakan **tampilan atas (drone view)** pohon sawit.
+- Hindari gambar close-up batang atau daun secara individu.
+- Pastikan gambar memiliki **resolusi cukup tinggi** dan tidak buram.
+""")
+
+# ✨ (Opsional) Tampilkan contoh gambar yang valid
+st.image("44000_4000_750_2866_jpg.rf.863dd3315319240fb7b5b8422751b066.jpg", caption="Contoh tampilan atas pohon sawit (drone view)", use_column_width=True)
+
 st.write("""
 Upload gambar pohon sawit untuk mendeteksi kesehatannya.
 """)
@@ -27,12 +39,11 @@ selected_classes = st.sidebar.multiselect(
     ALL_CLASSES,
     default=ALL_CLASSES
 )
-conf_threshold = st.sidebar.slider('Confidence Threshold', 0.1, 1.0, 0.5, 0.05)
-iou_threshold = st.sidebar.slider('IoU Threshold', 0.1, 1.0, 0.4, 0.05)
+conf_threshold = st.sidebar.slider('Tingkat Keyakinan Mesin', 0.1, 1.0, 0.5, 0.05)
 use_crop = st.sidebar.checkbox('Gunakan Crop Area?', value=False)
 
 # Upload Gambar
-uploaded_file = st.file_uploader("Pilih gambar", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Pilih gambar (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     st.subheader("📷 Gambar Asli")
@@ -41,7 +52,7 @@ if uploaded_file:
 
     # Jika pengguna ingin crop
     if use_crop:
-        st.subheader("🔍 Pilih Area untuk Crop (Fixed 1:1 1024x1024)")
+        st.subheader("🔍 Pilih Area untuk Crop (Fixed 1:1 640x640)")
         cropped_img = st_cropper(
             img,
             aspect_ratio=(1, 1),
@@ -51,8 +62,8 @@ if uploaded_file:
         )
 
         if cropped_img is not None:
-            # Resize hasil crop ke 1024x1024
-            cropped_img = cropped_img.resize((1024, 1024))
+            # Resize hasil crop ke 640x640
+            cropped_img = cropped_img.resize((640, 640))
             st.subheader("🖼️ Hasil Crop")
             st.image(cropped_img, use_column_width=True, caption="Bagian gambar yang dipilih")
 
